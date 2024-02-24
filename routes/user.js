@@ -3,14 +3,25 @@ const userMiddleware=require("../middlewares/user");
 const jwt=require("jsonwebtoken");
 const {User,Task}=require("../db/index")
 const router=express.Router();
-const {JWT_SECRET}=require("../config")
+const {JWT_SECRET}=require("../config");
+const {userSignUp,userSignIn,taskId}=require("../types");
 
 
 
 router.post('/signup',async(req,res)=>{
+    const createPayload=req.body;
+    const parsedPayload=userSignUp.safeParse(createPayload);
+
+    if(!parsedPayload){
+        res.status(411).json({
+            msg:"you sent the wrong inputs",
+        })
+        return ;
+    }
     const username=req.body.username;
     const password=req.body.password;
     const name=req.body.name;
+    
     
     const ifUser= await User.findOne({
         username:username
@@ -35,6 +46,15 @@ router.post('/signup',async(req,res)=>{
 });
 
 router.post('/signin',async(req,res)=>{
+    const createPayload=req.body;
+    const parsedPayload=userSignIn.safeParse(createPayload);
+
+    if(!parsedPayload){
+        res.status(411).json({
+            msg:"you sent the wrong inputs",
+        })
+        return ;
+    }
    const username=req.body.username;
    const password=req.body.username;
 
@@ -88,6 +108,15 @@ router.get('/tasks',userMiddleware,async(req,res)=>{
 })
 
 router.put('/update/:taskId',userMiddleware,async(req,res)=>{
+    const createPayload=req.params.taskId;
+    const parsedPayload=taskId.safeParse(createPayload);
+
+    if(!parsedPayload){
+        res.status(411).json({
+            msg:"you sent the wrong inputs",
+        })
+        return ;
+    }
     const taskId=req.params.taskId;
     const username=req.username;
     const lastUpdated=req.body.lastUpdated;
@@ -104,6 +133,15 @@ router.put('/update/:taskId',userMiddleware,async(req,res)=>{
 })
 
 router.delete('/delete/:taskId',userMiddleware,async(req,res)=>{
+    const createPayload=req.params.taskId;
+    const parsedPayload=taskId.safeParse(createPayload);
+
+    if(!parsedPayload){
+        res.status(411).json({
+            msg:"you sent the wrong inputs",
+        })
+        return ;
+    }
     const taskId=req.params.taskId;
     
     const validate=await Task.findOne({
